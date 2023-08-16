@@ -1,0 +1,336 @@
+apiVersion: v1
+entries:
+  argo-cd:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: fixed
+          description: add missing permissions to run actions
+      artifacthub.io/signKey: |
+        fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
+        url: https://argoproj.github.io/argo-helm/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v2.8.0
+    created: "2023-08-16T14:50:45.734789+09:00"
+    dependencies:
+    - condition: redis-ha.enabled
+      name: redis-ha
+      repository: https://dandydeveloper.github.io/charts/
+      version: 4.23.0
+    description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery
+      tool for Kubernetes.
+    digest: 77e725fb080254ea1d825792c0c57a7f6eed8cf20357fc20851a04724104172d
+    home: https://github.com/argoproj/argo-helm
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argoproj
+    - argocd
+    - gitops
+    kubeVersion: '>=1.23.0-0'
+    maintainers:
+    - name: argoproj
+      url: https://argoproj.github.io/
+    name: argo-cd
+    sources:
+    - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+    - https://github.com/argoproj/argo-cd
+    urls:
+    - charts/argo-cd-5.43.3.tgz
+    version: 5.43.3
+  fluent-bit:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: "Updated Fluent Bit OCI image to v2.1.8."
+    apiVersion: v1
+    appVersion: 2.1.8
+    created: "2023-08-16T14:50:45.73615+09:00"
+    description: Fast and lightweight log processor and forwarder or Linux, OSX and
+      BSD family operating systems.
+    digest: d107c6f5179f43d968edae2e542001b421171fe3bc28f67f439414e01144e7de
+    home: https://fluentbit.io/
+    icon: https://raw.githubusercontent.com/cncf/artwork/master/projects/fluentd/fluentbit/icon/fluentbit-icon-color.svg
+    keywords:
+    - logging
+    - fluent-bit
+    - fluentd
+    maintainers:
+    - email: eduardo@calyptia.com
+      name: edsiper
+    - email: naseem@transit.app
+      name: naseemkullah
+    - email: towmeykaw@gmail.com
+      name: Towmeykaw
+    - email: steve.hipwell@gmail.com
+      name: stevehipwell
+    name: fluent-bit
+    sources:
+    - https://github.com/fluent/fluent-bit/
+    urls:
+    - charts/fluent-bit-0.37.0.tgz
+    version: 0.37.0
+  kafka:
+  - annotations:
+      category: Infrastructure
+      images: |
+        - name: jmx-exporter
+          image: docker.io/bitnami/jmx-exporter:0.19.0-debian-11-r36
+        - name: kafka-exporter
+          image: docker.io/bitnami/kafka-exporter:1.7.0-debian-11-r72
+        - name: kafka
+          image: docker.io/bitnami/kafka:3.5.1-debian-11-r16
+        - name: kubectl
+          image: docker.io/bitnami/kubectl:1.25.12-debian-11-r17
+        - name: os-shell
+          image: docker.io/bitnami/os-shell:11-debian-11-r31
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 3.5.1
+    created: "2023-08-16T14:50:45.74596+09:00"
+    dependencies:
+    - condition: zookeeper.enabled
+      name: zookeeper
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 11.x.x
+    - name: common
+      repository: oci://registry-1.docker.io/bitnamicharts
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Apache Kafka is a distributed streaming platform designed to build
+      real-time pipelines and can be used as a message broker or as a replacement
+      for a log aggregation solution for big data applications.
+    digest: 9b4e4c2778d6718d1232fca52b37d8016d13ab4ccf1a44a1876982247475a4b7
+    home: https://bitnami.com
+    icon: https://bitnami.com/assets/stacks/kafka/img/kafka-stack-220x234.png
+    keywords:
+    - kafka
+    - zookeeper
+    - streaming
+    - producer
+    - consumer
+    maintainers:
+    - name: VMware, Inc.
+      url: https://github.com/bitnami/charts
+    name: kafka
+    sources:
+    - https://github.com/bitnami/charts/tree/main/bitnami/kafka
+    urls:
+    - charts/kafka-24.0.10.tgz
+    version: 24.0.10
+  kube-prometheus-stack:
+  - annotations:
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/prometheus-community/helm-charts
+        - name: Upstream Project
+          url: https://github.com/prometheus-operator/kube-prometheus
+      artifacthub.io/operator: "true"
+    apiVersion: v2
+    appVersion: v0.66.0
+    created: "2023-08-16T14:50:45.770618+09:00"
+    dependencies:
+    - condition: crds.enabled
+      name: crds
+      repository: ""
+      version: 0.0.0
+    - condition: kubeStateMetrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.10.*
+    - condition: nodeExporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.21.*
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 6.58.*
+    - condition: windowsMonitoring.enabled
+      name: prometheus-windows-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 0.1.*
+    description: kube-prometheus-stack collects Kubernetes manifests, Grafana dashboards,
+      and Prometheus rules combined with documentation and scripts to provide easy
+      to operate end-to-end Kubernetes cluster monitoring with Prometheus using the
+      Prometheus Operator.
+    digest: cb793adf544377bdb5b1941d14c79fb51c545439f7b341dc09c9c553105edf8e
+    home: https://github.com/prometheus-operator/kube-prometheus
+    icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
+    keywords:
+    - operator
+    - prometheus
+    - kube-prometheus
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: andrew@quadcorps.co.uk
+      name: andrewgkew
+    - email: gianrubio@gmail.com
+      name: gianrubio
+    - email: github.gkarthiks@gmail.com
+      name: gkarthiks
+    - email: kube-prometheus-stack@sisti.pt
+      name: GMartinez-Sisti
+    - email: scott@r6by.com
+      name: scottrigby
+    - email: miroslav.hadzhiev@gmail.com
+      name: Xtigyro
+    - email: quentin.bisson@gmail.com
+      name: QuentinBisson
+    name: kube-prometheus-stack
+    sources:
+    - https://github.com/prometheus-community/helm-charts
+    - https://github.com/prometheus-operator/kube-prometheus
+    type: application
+    urls:
+    - charts/kube-prometheus-stack-48.3.1.tgz
+    version: 48.3.1
+  mysql-innodbcluster:
+  - apiVersion: v2
+    appVersion: 8.1.0
+    created: "2023-08-16T14:50:45.771161+09:00"
+    description: MySQL InnoDB Cluster Helm Chart for deploying MySQL InnoDB Cluster
+      in Kubernetes
+    digest: 5fd11c6863656adb4e1eb1c60a8e3c02d9ca562b9b99b54f20013dd9999629e2
+    icon: https://labs.mysql.com/common/themes/sakila/favicon.ico
+    name: mysql-innodbcluster
+    type: application
+    urls:
+    - charts/mysql-innodbcluster-2.1.0.tgz
+    version: 2.1.0
+  mysql-operator:
+  - apiVersion: v2
+    appVersion: 8.1.0-2.1.0
+    created: "2023-08-16T14:50:45.77176+09:00"
+    description: MySQL Operator Helm Chart for deploying MySQL InnoDB Cluster in Kubernetes
+    digest: 7be12c4afafd4376e15a7847b6832e4873196141e298d55306e64ee0cbb92a83
+    icon: https://labs.mysql.com/common/themes/sakila/favicon.ico
+    name: mysql-operator
+    type: application
+    urls:
+    - charts/mysql-operator-2.1.0.tgz
+    version: 2.1.0
+  opensearch:
+  - apiVersion: v2
+    appVersion: 2.7.0
+    created: "2023-08-16T14:50:45.773524+09:00"
+    description: A Helm chart for OpenSearch
+    digest: 3cac54ba4cc77da6378605c11b2fa1e650ed5817697fbf089a3bc6f25a8f2d66
+    maintainers:
+    - name: DandyDeveloper
+    - name: bbarani
+    - name: gaiksaya
+    - name: peterzhuamazon
+    - name: prudhvigodithi
+    - name: TheAlgo
+    name: opensearch
+    type: application
+    urls:
+    - charts/opensearch-2.12.0.tgz
+    version: 2.12.0
+  opensearch-dashboards:
+  - apiVersion: v2
+    appVersion: 2.9.0
+    created: "2023-08-16T14:50:45.774418+09:00"
+    description: A Helm chart for OpenSearch Dashboards
+    digest: 45f66b362196441adaceaed5a8c1b02d3875ae1d4e4d2381e63e0e31f2a54f88
+    maintainers:
+    - name: DandyDeveloper
+    - name: bbarani
+    - name: gaiksaya
+    - name: peterzhuamazon
+    - name: prudhvigodithi
+    - name: TheAlgo
+    name: opensearch-dashboards
+    type: application
+    urls:
+    - charts/opensearch-dashboards-2.12.0.tgz
+    version: 2.12.0
+  redis-cluster:
+  - annotations:
+      category: Database
+      images: |
+        - name: os-shell
+          image: docker.io/bitnami/os-shell:11-debian-11-r37
+        - name: redis-cluster
+          image: docker.io/bitnami/redis-cluster:7.2.0-debian-11-r0
+        - name: redis-exporter
+          image: docker.io/bitnami/redis-exporter:1.52.0-debian-11-r17
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 7.2.0
+    created: "2023-08-16T14:50:45.779463+09:00"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/bitnamicharts
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Redis(R) is an open source, scalable, distributed in-memory cache
+      for applications. It can be used to store and serve data in the form of strings,
+      hashes, lists, sets and sorted sets.
+    digest: b0a788fb289f8484866cc57929d8ca569e5f9e87eec9a045f615b080739a7fd1
+    home: https://bitnami.com
+    icon: https://bitnami.com/assets/stacks/redis/img/redis-stack-220x234.png
+    keywords:
+    - redis
+    - keyvalue
+    - database
+    maintainers:
+    - name: VMware, Inc.
+      url: https://github.com/bitnami/charts
+    name: redis-cluster
+    sources:
+    - https://github.com/bitnami/charts/tree/main/bitnami/redis-cluster
+    urls:
+    - charts/redis-cluster-8.6.13.tgz
+    version: 8.6.13
+  urnr:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-08-16T14:50:45.72421+09:00"
+    dependencies:
+    - condition: mysql-operator.enabled
+      name: mysql-operator
+      repository: https://mysql.github.io/mysql-operator
+      version: 2.1.0
+    - condition: mysql-innodbcluster.enabled
+      name: mysql-innodbcluster
+      repository: https://mysql.github.io/mysql-operator
+      version: 2.1.0
+    - condition: prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 48.3.1
+    - condition: fluentd-bit.enabled
+      name: fluent-bit
+      repository: https://fluent.github.io/helm-charts
+      version: 0.37.0
+    - condition: opensearch.enabled
+      name: opensearch
+      repository: https://opensearch-project.github.io/helm-charts
+      version: 2.12.0
+    - condition: opensearch-dashboards.enabled
+      name: opensearch-dashboards
+      repository: https://opensearch-project.github.io/helm-charts
+      version: 2.12.0
+    - condition: kafka.enabled
+      name: kafka
+      repository: https://charts.bitnami.com/bitnami
+      version: 24.0.10
+    - condition: redis-cluster.enabled
+      name: redis-cluster
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.6.13
+    - condition: argo.enabled
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 5.43.3
+    description: release note share system by SWAVE
+    digest: 091328fc3fa7ac6e5b364937c48d81f435e29e0ce1fa57cd17d5b30c6654112e
+    name: urnr
+    type: application
+    urls:
+    - urnr-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-08-16T14:50:45.670233+09:00"

@@ -1,0 +1,52 @@
+apiVersion: v2
+name: urnr
+description: release note share system by SWAVE
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+
+dependencies:
+  - name: mysql-operator
+    repository: https://mysql.github.io/mysql-operator
+    version: 2.1.0
+    condition: mysql-operator.enabled
+    
+  - name: mysql-innodbcluster
+    repository: https://mysql.github.io/mysql-operator
+    version: 2.1.0
+    condition: mysql-innodbcluster.enabled
+
+  - name: kube-prometheus-stack
+    repository: https://prometheus-community.github.io/helm-charts
+    version: 48.3.1
+    condition: prometheus-stack.enabled
+    
+  - name: fluent-bit
+    repository: https://fluent.github.io/helm-charts
+    version: 0.37.0
+    condition: fluentd-bit.enabled
+
+  - name: opensearch
+    repository: https://opensearch-project.github.io/helm-charts
+    version: 2.12.0
+    condition: opensearch.enabled
+    
+  - name: opensearch-dashboards
+    repository: https://opensearch-project.github.io/helm-charts
+    version: 2.12.0
+    condition: opensearch-dashboards.enabled
+    
+  - name: kafka
+    repository: https://charts.bitnami.com/bitnami
+    version: 24.0.10
+    condition: kafka.enabled
+
+  - name: redis-cluster
+    repository: https://charts.bitnami.com/bitnami
+    version: 8.6.13
+    condition: redis-cluster.enabled
+
+  - name: argo-cd
+    repository: https://argoproj.github.io/argo-helm
+    version: 5.43.3
+    condition: argo.enabled

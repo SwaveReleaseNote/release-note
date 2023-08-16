@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Release.Namespace | default "urnr" }}
+  name: front
+  labels:
+    app: front
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9113'
+      labels:
+        app: front
+    spec:
+      containers:
+        - name: front
+          image: kjk7212/release_note_front
+          ports:
+            - name: front
+              containerPort: 3000
+          resources:
+            {{- toYaml .Values.frontResources | nindent 12 }}
+        - name: front-exporter
+          image: 'nginx/nginx-prometheus-exporter:0.10.0'
+          args:
+            - '-nginx.scrape-uri=http://localhost:3000/metrics'
+          ports:
+            - name: ngnix-exporter
+              containerPort: 9113
+      {{- with .Values.frontNodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontAffinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontTolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Release.Namespace | default "urnr" }}
+  name: back
+  labels:
+    app: back
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: back
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8082'
+        prometheus.io/path: "/actuator/prometheus"
+      labels:
+        app: back
+    spec:
+      containers:
+        - name: back
+          image: kjk7212/release_note_back
+          ports:
+            - name: back
+              containerPort: 8080
+            - name: spring-actuator
+              containerPort: 8082
+          resources:
+            {{- toYaml .Values.backResources | nindent 12 }}
+        - name: redis-container
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+      {{- with .Values.backNodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backAffinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backTolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

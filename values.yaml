@@ -1,0 +1,330 @@
+
+# hostname of worker nodes
+nodeNames:
+  - host-10-0-19-11
+  - host-10-0-19-240
+  - host-10-0-20-23
+
+# format of NFS
+backupStorage:
+  capacity: 1024Gi
+  address: 10.0.19.118
+  path: /backup
+
+frontResources:
+  limits:
+    cpu: 750m
+    memory: 2048Mi
+    
+backResources:
+  limits:
+    cpu: 750m
+    memory: 2048Mi
+
+# only applied when autoscaling is disabled
+replicaCount: 3
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+frontNodeSelector: {}
+
+backNodeSelector: {}
+
+frontTolerations: []
+
+backTolerations: []
+
+frontAffinity:
+  podAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - front
+        topologyKey: kubernetes.io/hostname
+        
+backAffinity:
+  podAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - back
+        topologyKey: kubernetes.io/hostname
+
+
+# dependencies -----------------------------------------
+
+fluent-bit:
+  enabled: true
+  config:
+    outputs: |
+      [OUTPUT]
+          Name es
+          Match kube.*
+          Host opensearch-cluster-master
+          Logstash_Format On
+          Retry_Limit False
+          Suppress_Type_Name On
+          Replace_Dots    On
+
+      [OUTPUT]
+          Name es
+          Match host.*
+          Host opensearch-cluster-master
+          Logstash_Format On
+          Logstash_Prefix node
+          Retry_Limit False
+          Suppress_Type_Name On
+          Replace_Dots    On
+
+opensearch:
+  enabled: true
+  persistence:
+    storageClass: "opensearch"
+  image:
+    repository: "kjk7212/opensearch"
+    tag: "2.9.0"
+  extraEnvs:
+    - name: DISABLE_INSTALL_DEMO_CONFIG
+      value: "true"
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+  config:
+    opensearch.yml: |
+      cluster.name: opensearch-cluster
+      network.host: 0.0.0.0
+
+opensearch-dashboards:
+  enabled: true
+  service:
+    type: NodePort
+    nodePort: 30000
+  opensearchHosts: "http://opensearch-cluster-master:9200"
+  extraEnvs:
+    - name: DISABLE_SECURITY_DASHBOARDS_PLUGIN
+      value: "true"
+        
+mysql-operator:
+  enabled: true
+  envs:
+    k8sClusterDomain: cluster.local
+  
+mysql-innodbcluster:
+  enabled: true
+  tls:
+    useSelfSigned: true
+  serverInstances: 3
+  routerInstances: 2
+  baseServerId: 1000
+  
+  image:
+    pullPolicy: IfNotPresent
+    pullSecrets:
+      enabled: false
+      secretName:
+
+  credentials:
+    root:
+      user: root
+      password: admin
+      host: "%"
+      
+  backupProfiles:
+    - name: backup-db
+      dumpInstance:
+        storage:
+          persistentVolumeClaim:
+            claimName: backup
+
+  backupSchedules:
+    - name: schedule-inline
+      schedule: "0 0 3 * *"
+      deleteBackupData: false
+      enabled: true
+      backupProfileName: backup-db
+        
+  datadirVolumeClaimTemplate:
+    accessModes: ReadWriteOnce
+    resources:
+      requests:
+        storage: 5Gi
+
+kube-prometheus-stack:
+  enabled: true
+  prometheus:
+    service:
+      type: NodePort
+      nodePort: 30001
+      
+  additionalPrometheusRulesMap:
+    rule-name:
+      groups:
+      - name: alert.rules
+        rules:
+        - alert: InstanceDown
+          expr: up == 0
+          for: 1m
+          labels:
+            severity: "critical"
+          annotations:
+            summary: "Endpoint {{ $labels.instance }}"
+            identifier: "{{ $labels.instance }}"
+            description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes."
+
+        - alert: HostOutOfMemory
+          expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host out of memory (instance {{ $labels.instance }})"
+            description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+        - alert: HostMemoryUnderMemoryPressure
+          expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host memory under memory pressure (instance {{ $labels.instance }})"
+            description: "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+            
+        - alert: HostOutOfDiskSpace
+          expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host out of disk space (instance {{ $labels.instance }})"
+            description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+        - alert: HostHighCpuLoad
+          expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host high CPU load (instance {{ $labels.instance }})"
+            description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+            
+  grafana:
+    service:
+      type: NodePort
+      nodePort: 30002
+      
+  alertmanager:
+    service:
+      type: NodePort
+      nodePort: 30003
+    config:
+      global:
+        resolve_timeout: 5m
+        slack_api_url: https://hooks.slack.com/services/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
+      route:
+        group_by: ['job']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 2m
+        receiver: 'null'
+        receiver: 'slack'
+        routes:
+        - match:
+            alertname: Watchdog
+          receiver: 'null'
+      receivers:
+      - name: 'null'
+      - name: 'slack'
+        slack_configs:
+                - channel: '#kanban'
+                  username: 'prometheus'
+                  send_resolved: false
+                  icon_url: https://avatars3.githubusercontent.com/u/3380462
+                  title: |-
+                   [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
+                  text: >-
+                     {{ range .Alerts -}}
+                     *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+
+                     *Description:* {{ .Annotations.description }}
+
+                     *Details:*
+                       {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+                       {{ end }}
+                     {{ end }}
+      templates:
+      - '/etc/alertmanager/config/*.tmpl'
+      inhibit_rules:
+        - source_matchers:
+            - 'severity = critical'
+          target_matchers:
+            - 'severity =~ warning|info'
+          equal:
+            - 'namespace'
+            - 'alertname'
+        - source_matchers:
+            - 'severity = warning'
+          target_matchers:
+            - 'severity = info'
+          equal:
+            - 'namespace'
+            - 'alertname'
+        - source_matchers:
+            - 'alertname = InfoInhibitor'
+          target_matchers:
+            - 'severity = info'
+          equal:
+            - 'namespace'
+
+kafka:
+  enabled: true
+  image:
+    repository: "kjk7212/kafka_bitnami"
+    tag: "1.0.0"
+  listeners:
+    client:
+      protocol: "PLAINTEXT"
+    controller:
+      protocol: "PLAINTEXT"
+    interbroker:
+      protocol: "PLAINTEXT"
+    external:
+      protocol: "PLAINTEXT"
+  controller:
+    persistence:
+      storageClass: "kafka"
+
+redis-cluster:
+  enabled: true
+  global:
+    storageClass: "redis"
+  redis:
+    resources:
+      limits:
+         memory: 100Mi
+         cpu: 100m
+
+argo-cd:
+  enabled: true
+  notifications:
+    secret:
+      items:
+        slack-token: xoxb-5358440825120-5334832725970-wwlCFhdKzedK8rLlw1H2P8WB
+    
+  server:
+    service:
+      type: NodePort
+      nodePortHttp: 30004

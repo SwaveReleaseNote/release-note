@@ -1,0 +1,106 @@
+{{- $namespace := .Release.Namespace | default "urnr" -}}
+{{- $relasename := .Release.Name | default "urnr" -}}
+
+{{- range $index, $node := .Values.nodeNames }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: opensearch-pv-{{ $index }}
+spec:
+  storageClassName: "opensearch"
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: /opensearch
+    type: DirectoryOrCreate
+  claimRef:
+    name: opensearch-cluster-master-opensearch-cluster-master-{{ $index }}
+    namespace: {{ $namespace }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+            - {{ $node }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kafka-pv-{{ $index }}
+spec:
+  storageClassName: "kafka"
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: /kafka
+    type: DirectoryOrCreate
+  claimRef:
+    name: data-urnr-kafka-controller-{{ $index }}
+    namespace: {{ $namespace }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+            - {{ $node }}
+            
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: db-pv-{{ $index }}
+spec:
+  storageClassName: "db"
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: /db
+    type: DirectoryOrCreate
+  claimRef:
+    name: datadir-{{ $relasename }}-{{ $index }}
+    namespace: {{ $namespace }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+            - {{ $node }}
+{{- end }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: backup-pv
+spec:
+  capacity:
+    storage: {{ .Values.backupStorage.capacity }}
+  accessModes:
+    - ReadWriteMany 
+  nfs:
+    server: {{ .Values.backupStorage.address }}
+    path: {{ .Values.backupStorage.path }}
+

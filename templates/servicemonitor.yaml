@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: front
+    release: prometheus-stack
+  name: front
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+spec:
+  endpoints:
+  - interval: 10s
+    port: "ngnix-exporter"
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - {{ .Values.namespace | default .Release.Namespace }}
+  selector:
+    matchLabels:
+      app: front
+      
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: back
+    release: prometheus-stack
+  name: back
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+spec:
+  endpoints:
+  - interval: 10s
+    port: "spring-actuator"
+    path: /actuator/prometheus
+  namespaceSelector:
+    matchNames:
+    - {{ .Values.namespace | default .Release.Namespace }}
+  selector:
+    matchLabels:
+      app: back
+
