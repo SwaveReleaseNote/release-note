@@ -87,6 +87,64 @@ spec:
           operator: "In"
           values:
             - {{ $node }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv-{{ $index }}
+spec:
+  storageClassName: "redis"
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: /redis
+    type: DirectoryOrCreate
+  claimRef:
+    name: redis-data-{{ $relasename }}-redis-cluster-{{ $index }}
+    namespace: {{ $namespace }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+            - {{ $node }}
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv-{{ add $index 1 }}
+spec:
+  storageClassName: "redis"
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: /redis
+    type: DirectoryOrCreate
+  claimRef:
+    name: redis-data-{{ $relasename }}-redis-cluster-{{ add $index 1 }}
+    namespace: {{ $namespace }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+            - {{ $node }}
+
 {{- end }}
 
 ---
