@@ -23,6 +23,7 @@ spec:
       containers:
         - name: front
           image: kjk7212/release_note_front
+          imagePullPolicy: Always
           ports:
             - name: front
               containerPort: 3000
@@ -76,6 +77,7 @@ spec:
       containers:
         - name: back
           image: kjk7212/release_note_back
+          imagePullPolicy: Always
           ports:
             - name: back
               containerPort: 8080

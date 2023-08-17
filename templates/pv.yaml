@@ -103,7 +103,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: /redis
+    path: /redis{{ $index }}
     type: DirectoryOrCreate
   claimRef:
     name: redis-data-{{ $relasename }}-redis-cluster-{{ $index }}
@@ -121,7 +121,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: redis-pv-{{ add $index 1 }}
+  name: redis-pv-{{ add $index 3 }}
 spec:
   storageClassName: "redis"
   capacity:
@@ -131,10 +131,10 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: /redis
+    path: /redis{{ add $index 3 }}
     type: DirectoryOrCreate
   claimRef:
-    name: redis-data-{{ $relasename }}-redis-cluster-{{ add $index 1 }}
+    name: redis-data-{{ $relasename }}-redis-cluster-{{ add $index 3 }}
     namespace: {{ $namespace }}
   nodeAffinity:
     required:

@@ -311,6 +311,9 @@ redis-cluster:
   enabled: true
   global:
     storageClass: "redis"
+  usePassword: false
+  tls:
+    authClients: false
   redis:
     resources:
       limits:
@@ -322,7 +325,7 @@ argo-cd:
   notifications:
     secret:
       items:
-        slack-token: xoxb-5358440825120-5334832725970-wwlCFhdKzedK8rLlw1H2P8WB
+        slack-token: xoxb-5358440825120-5334832725970-q6IrE6cKxwm6e1qgcrTPVaP3
     
   server:
     service:

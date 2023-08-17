@@ -10,7 +10,7 @@ entries:
         url: https://argoproj.github.io/argo-helm/pgp_keys.asc
     apiVersion: v2
     appVersion: v2.8.0
-    created: "2023-08-16T15:50:28.969594+09:00"
+    created: "2023-08-17T21:30:03.483427+09:00"
     dependencies:
     - condition: redis-ha.enabled
       name: redis-ha
@@ -43,7 +43,7 @@ entries:
           description: "Updated Fluent Bit OCI image to v2.1.8."
     apiVersion: v1
     appVersion: 2.1.8
-    created: "2023-08-16T15:50:28.971086+09:00"
+    created: "2023-08-17T21:30:03.484376+09:00"
     description: Fast and lightweight log processor and forwarder or Linux, OSX and
       BSD family operating systems.
     digest: d107c6f5179f43d968edae2e542001b421171fe3bc28f67f439414e01144e7de
@@ -85,7 +85,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.1
-    created: "2023-08-16T15:50:28.981547+09:00"
+    created: "2023-08-17T21:30:03.489625+09:00"
     dependencies:
     - condition: zookeeper.enabled
       name: zookeeper
@@ -128,7 +128,7 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v0.66.0
-    created: "2023-08-16T15:50:29.004862+09:00"
+    created: "2023-08-17T21:30:03.504753+09:00"
     dependencies:
     - condition: crds.enabled
       name: crds
@@ -188,7 +188,7 @@ entries:
   mysql-innodbcluster:
   - apiVersion: v2
     appVersion: 8.1.0
-    created: "2023-08-16T15:50:29.005498+09:00"
+    created: "2023-08-17T21:30:03.505197+09:00"
     description: MySQL InnoDB Cluster Helm Chart for deploying MySQL InnoDB Cluster
       in Kubernetes
     digest: 5fd11c6863656adb4e1eb1c60a8e3c02d9ca562b9b99b54f20013dd9999629e2
@@ -201,7 +201,7 @@ entries:
   mysql-operator:
   - apiVersion: v2
     appVersion: 8.1.0-2.1.0
-    created: "2023-08-16T15:50:29.006129+09:00"
+    created: "2023-08-17T21:30:03.505679+09:00"
     description: MySQL Operator Helm Chart for deploying MySQL InnoDB Cluster in Kubernetes
     digest: 7be12c4afafd4376e15a7847b6832e4873196141e298d55306e64ee0cbb92a83
     icon: https://labs.mysql.com/common/themes/sakila/favicon.ico
@@ -213,7 +213,7 @@ entries:
   opensearch:
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2023-08-16T15:50:29.007855+09:00"
+    created: "2023-08-17T21:30:03.506894+09:00"
     description: A Helm chart for OpenSearch
     digest: 3cac54ba4cc77da6378605c11b2fa1e650ed5817697fbf089a3bc6f25a8f2d66
     maintainers:
@@ -231,7 +231,7 @@ entries:
   opensearch-dashboards:
   - apiVersion: v2
     appVersion: 2.9.0
-    created: "2023-08-16T15:50:29.008735+09:00"
+    created: "2023-08-17T21:30:03.50747+09:00"
     description: A Helm chart for OpenSearch Dashboards
     digest: 45f66b362196441adaceaed5a8c1b02d3875ae1d4e4d2381e63e0e31f2a54f88
     maintainers:
@@ -259,7 +259,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 7.2.0
-    created: "2023-08-16T15:50:29.013275+09:00"
+    created: "2023-08-17T21:30:03.510445+09:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -288,7 +288,7 @@ entries:
   urnr:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2023-08-16T15:50:28.959112+09:00"
+    created: "2023-08-17T21:30:03.475651+09:00"
     dependencies:
     - condition: mysql-operator.enabled
       name: mysql-operator
@@ -327,10 +327,10 @@ entries:
       repository: https://argoproj.github.io/argo-helm
       version: 5.43.3
     description: release note share system by SWAVE
-    digest: 237a08eeece064ee12b3d4365b2222c6cd5c7273596d07ab3e75430a6aaa3895
+    digest: 58edf01f1cc620c7ab05633bcb270674f09141c035e5d8936e7eaae22c347e79
     name: urnr
     type: application
     urls:
     - urnr-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-16T15:50:28.904803+09:00"
+generated: "2023-08-17T21:30:03.439677+09:00"
