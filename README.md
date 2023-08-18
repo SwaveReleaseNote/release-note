@@ -36,7 +36,7 @@ https://opensearch-project.github.io/helm-charts
 opensearch-dashboards  
 https://opensearch-project.github.io/helm-charts
 
-### MQ
+### Data Streaming platform
 kafka  
 https://charts.bitnami.com/bitnami
 
