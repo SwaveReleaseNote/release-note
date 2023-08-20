@@ -4,6 +4,11 @@ helm chart for urnr - release note share system
 ![제목 없는 다이어그램 drawio-1](https://github.com/SwaveReleaseNote/release-note/assets/54500840/95f78ecc-37d4-43ef-8b0d-c0842b48d445)
 
 우리누리 릴리즈노트 공유 시스템의 helm 차트입니다.  
+```console
+helm repo add urnr https://swavereleasenote.github.io/release-note/  
+helm install urnr --namespace urnr --create-namespace urnr/urnr  
+```
+위 커맨드로 설치가능합니다,
 
 기본적으로 실행하기 위한 SC, PV, PVC가 포함되어 있으며, LoadBanlancer 타입의 서비스로 프론트엔드와 백엔드를 연결합니다.  
 모니터링을 위한 서비스 모니터와 관련 파드 설정이 되어있습니다.
